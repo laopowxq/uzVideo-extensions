@@ -17,9 +17,20 @@ class www4kavClass extends WebApiBase {
         super()
         this.webSite = 'https://4k-av.com'
         this.headers = {
-            'User-Agent':
-                'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
-            referer: this.webSite,
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
+            'referer': this.webSite,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive'
+        }
+        // 添加请求选项
+        this.reqOptions = {
+            headers: this.headers,
+            timeout: 10000,
+            retry: 3,
+            followRedirect: true,
+            validateStatus: false
         }
         this.ignoreClassName = ['首页', 'AV']
         this.lastPage = {
@@ -40,7 +51,7 @@ class www4kavClass extends WebApiBase {
         this.webSite = UZUtils.removeTrailingSlash(webUrl)
         let backData = new RepVideoClassList()
         try {
-            const pro = await req(webUrl, { headers: this.headers })
+            const pro = await req(webUrl, this.reqOptions)
             backData.error = pro.error
             const proData = pro.data
             if (proData) {
@@ -85,7 +96,7 @@ class www4kavClass extends WebApiBase {
         try {
             if (args.page === 1) {
                 // get lastPage
-                let res = await req(args.url, { headers: this.headers })
+                let res = await req(args.url, this.reqOptions)
                 const $ = cheerio.load(res.data)
                 let pageNumber = $('#MainContent_header_nav .page-number').text()
                 let lastPage = pageNumber.split('/')[1]
@@ -105,7 +116,7 @@ class www4kavClass extends WebApiBase {
 
             let listUrl = args.url + `page-${page}.html`
 
-            let pro = await req(listUrl, { headers: this.headers })
+            let pro = await req(listUrl, this.reqOptions)
             backData.error = pro.error
             let proData = pro.data
             if (proData) {
@@ -144,7 +155,7 @@ class www4kavClass extends WebApiBase {
         let backData = new RepVideoDetail()
         try {
             let webUrl = UZUtils.removeTrailingSlash(this.webSite) + args.url
-            let pro = await req(webUrl, { headers: this.headers })
+            let pro = await req(webUrl, this.reqOptions)
             backData.error = pro.error
             let proData = pro.data
             if (proData) {
@@ -213,7 +224,7 @@ class www4kavClass extends WebApiBase {
         let reqUrl = args.url.replace('www.', '')
 
         try {
-            const pro = await req(reqUrl, { headers: this.headers })
+            const pro = await req(reqUrl, this.reqOptions)
             backData.error = pro.error
             let proData = pro.data
 
@@ -239,7 +250,7 @@ class www4kavClass extends WebApiBase {
         try {
             let listUrl = this.webSite + `/s?q=${args.searchWord}`
 
-            let pro = await req(listUrl, { headers: this.headers })
+            let pro = await req(listUrl, this.reqOptions)
             backData.error = pro.error
             let proData = pro.data
             if (proData) {
